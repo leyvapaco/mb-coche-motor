@@ -1,14 +1,11 @@
 function arranca () {
-    velocidad = 30
-    luces = neopixel.create(DigitalPin.P15, 4, NeoPixelMode.RGB)
-    luces.showColor(neopixel.colors(NeoPixelColors.Purple))
+    velocidad = 35
     maqueen.writeLED(maqueen.LED.LEDLeft, maqueen.LEDswitch.turnOn)
     maqueen.writeLED(maqueen.LED.LEDRight, maqueen.LEDswitch.turnOn)
     music.playMelody("A B A G A B A G ", 426)
 }
 function para () {
     maqueen.motorStop(maqueen.Motors.All)
-    velocidad = 0
     maqueen.writeLED(maqueen.LED.LEDRight, maqueen.LEDswitch.turnOff)
     maqueen.writeLED(maqueen.LED.LEDLeft, maqueen.LEDswitch.turnOff)
 }
@@ -30,8 +27,32 @@ radio.onReceivedString(function (receivedString) {
     }
     basic.pause(200)
 })
+function personalizar () {
+    luces = neopixel.create(DigitalPin.P15, 4, NeoPixelMode.RGB)
+    luces.showColor(neopixel.colors(NeoPixelColors.Purple))
+    dorsal = 1
+    basic.showNumber(dorsal)
+    radio.sendNumber(dorsal)
+    music.setVolume(220)
+    basic.pause(100)
+}
+function compruebaBorde () {
+    if (maqueen.readPatrol(maqueen.Patrol.PatrolLeft) == 0 || maqueen.readPatrol(maqueen.Patrol.PatrolRight) == 0) {
+        para()
+        for (let index = 0; index < 10; index++) {
+            luces.showColor(neopixel.colors(NeoPixelColors.Red))
+            music.setVolume(127)
+            music.playTone(330, music.beat(BeatFraction.Whole))
+            basic.pause(500)
+            luces.showColor(neopixel.colors(NeoPixelColors.White))
+            basic.pause(500)
+        }
+    }
+}
+let dorsal = 0
 let luces: neopixel.Strip = null
 let velocidad = 0
-radio.setGroup(1)
-basic.showNumber(1)
+radio.setGroup(80)
+basic.clearScreen()
 para()
+personalizar()
