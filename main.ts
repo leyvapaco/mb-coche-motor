@@ -58,17 +58,17 @@ function compruebaBorde () {
             basic.pause(500)
         }
         penalizado = false
-        maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CCW, 15)
+        maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CCW, 25)
         basic.pause(1000)
-        maqueen.motorRun(maqueen.Motors.M1, maqueen.Dir.CCW, 15)
-        maqueen.motorRun(maqueen.Motors.M2, maqueen.Dir.CW, 15)
-        basic.pause(700)
+        maqueen.motorRun(maqueen.Motors.M1, maqueen.Dir.CCW, 25)
+        maqueen.motorRun(maqueen.Motors.M2, maqueen.Dir.CW, 25)
+        basic.pause(1000)
         para()
     }
 }
 function usaTurbo () {
     if (turbos > 0) {
-        radio.sendNumber(turbos)
+        radio.sendNumber(turbos - 1)
         basic.pause(100)
         music.playTone(523, music.beat(BeatFraction.Double))
         maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CW, velocidad * 3)
@@ -76,9 +76,6 @@ function usaTurbo () {
         music.playTone(175, music.beat(BeatFraction.Double))
         maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CW, velocidad)
         turbos += -1
-    } else {
-        radio.sendNumber(0)
-        basic.pause(100)
     }
 }
 let dorsal = 0
@@ -92,4 +89,4 @@ music.stopAllSounds()
 basic.clearScreen()
 para()
 personalizar()
-turbos = 5
+turbos = 6
