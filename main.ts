@@ -1,11 +1,9 @@
 function arranca () {
-    if (!(penalizado)) {
-        velocidad = 35
-        maqueen.writeLED(maqueen.LED.LEDLeft, maqueen.LEDswitch.turnOn)
-        maqueen.writeLED(maqueen.LED.LEDRight, maqueen.LEDswitch.turnOn)
-        music.playMelody("A B A G A B A G ", 444)
-        arrancado = true
-    }
+    velocidad = 35
+    maqueen.writeLED(maqueen.LED.LEDLeft, maqueen.LEDswitch.turnOn)
+    maqueen.writeLED(maqueen.LED.LEDRight, maqueen.LEDswitch.turnOn)
+    music.playMelody("A B A G A B A G ", 444)
+    arrancado = true
 }
 function para () {
     maqueen.motorStop(maqueen.Motors.All)
@@ -27,9 +25,11 @@ radio.onReceivedString(function (receivedString) {
             maqueen.motorRun(maqueen.Motors.M1, maqueen.Dir.CW, velocidad)
         } else if (receivedString == "para") {
             para()
+        } else if (receivedString == "turbo") {
+            usaTurbo()
         }
     } else if (receivedString == "arranca") {
-        if (penalizado == false) {
+        if (!(penalizado)) {
             arranca()
         }
     }
@@ -49,7 +49,7 @@ function compruebaBorde () {
     if (maqueen.readPatrol(maqueen.Patrol.PatrolLeft) == 0 || maqueen.readPatrol(maqueen.Patrol.PatrolRight) == 0) {
         para()
         penalizado = true
-        for (let index = 0; index < 10; index++) {
+        for (let index = 0; index < 8; index++) {
             luces.showColor(neopixel.colors(NeoPixelColors.Red))
             music.setVolume(127)
             music.playTone(330, music.beat(BeatFraction.Whole))
@@ -58,21 +58,38 @@ function compruebaBorde () {
             basic.pause(500)
         }
         penalizado = false
-        maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CCW, -15)
+        maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CCW, 15)
         basic.pause(1000)
-        maqueen.motorRun(maqueen.Motors.M1, maqueen.Dir.CCW, -15)
-        maqueen.motorRun(maqueen.Motors.M2, maqueen.Dir.CW, -15)
+        maqueen.motorRun(maqueen.Motors.M1, maqueen.Dir.CCW, 15)
+        maqueen.motorRun(maqueen.Motors.M2, maqueen.Dir.CW, 15)
         basic.pause(700)
         para()
     }
 }
+function usaTurbo () {
+    if (turbos > 0) {
+        radio.sendNumber(turbos)
+        basic.pause(100)
+        music.playTone(523, music.beat(BeatFraction.Double))
+        maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CW, velocidad * 3)
+        basic.pause(3000)
+        music.playTone(175, music.beat(BeatFraction.Double))
+        maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CW, velocidad)
+        turbos += -1
+    } else {
+        radio.sendNumber(0)
+        basic.pause(100)
+    }
+}
 let dorsal = 0
 let luces: neopixel.Strip = null
+let penalizado = false
 let arrancado = false
 let velocidad = 0
-let penalizado = false
+let turbos = 0
 radio.setGroup(80)
 music.stopAllSounds()
 basic.clearScreen()
 para()
 personalizar()
+turbos = 5
