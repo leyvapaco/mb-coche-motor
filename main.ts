@@ -2,7 +2,7 @@ function arranca () {
     velocidad = 80
     maqueen.writeLED(maqueen.LED.LEDLeft, maqueen.LEDswitch.turnOn)
     maqueen.writeLED(maqueen.LED.LEDRight, maqueen.LEDswitch.turnOn)
-    luces.showColor(neopixel.colors(NeoPixelColors.Red))
+    luces.showColor(neopixel.colors(NeoPixelColors.Orange))
     music.playMelody("A B A G A B A G ", 444)
     personalizar()
     arrancado = true
@@ -29,7 +29,7 @@ radio.onReceivedString(function (receivedString) {
         } else if (receivedString == "para") {
             para()
         } else if (receivedString == "turbo") {
-        	
+            usaTurbo()
         }
     } else if (receivedString == "arranca") {
         if (!(penalizado)) {
@@ -40,7 +40,7 @@ radio.onReceivedString(function (receivedString) {
     basic.pause(100)
 })
 function personalizar () {
-    dorsal = 1
+    dorsal = 6
     basic.showNumber(dorsal)
     radio.sendNumber(dorsal)
     music.setVolume(220)
@@ -50,7 +50,7 @@ function compruebaBorde () {
     if (maqueen.readPatrol(maqueen.Patrol.PatrolLeft) == 0 || maqueen.readPatrol(maqueen.Patrol.PatrolRight) == 0) {
         para()
         penalizado = true
-        for (let index = 0; index < 6; index++) {
+        for (let index = 0; index < 5; index++) {
             basic.clearScreen()
             music.setVolume(127)
             maqueen.writeLED(maqueen.LED.LEDRight, maqueen.LEDswitch.turnOff)
@@ -65,18 +65,21 @@ function compruebaBorde () {
         penalizado = false
         maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CCW, velocidad)
         basic.pause(2000)
-        maqueen.motorRun(maqueen.Motors.M1, maqueen.Dir.CCW, 30)
-        maqueen.motorRun(maqueen.Motors.M2, maqueen.Dir.CW, 30)
-        basic.pause(1200)
         para()
+        basic.pause(200)
+        arranca()
     }
 }
 function usaTurbo () {
     if (turbos > 0) {
+        luces.showColor(neopixel.colors(NeoPixelColors.Violet))
         music.playTone(523, music.beat(BeatFraction.Double))
-        maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CW, velocidad * 4)
-        basic.pause(2000)
+        velocidad = 255
+        maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CW, velocidad)
+        basic.pause(5000)
+        luces.showColor(neopixel.colors(NeoPixelColors.Orange))
         music.playTone(175, music.beat(BeatFraction.Double))
+        velocidad = 80
         maqueen.motorRun(maqueen.Motors.All, maqueen.Dir.CW, velocidad)
         turbos += -1
     }
@@ -89,8 +92,8 @@ let turbos = 0
 let luces: neopixel.Strip = null
 basic.clearScreen()
 music.stopAllSounds()
-radio.setGroup(80)
+radio.setGroup(86)
 luces = neopixel.create(DigitalPin.P15, 4, NeoPixelMode.RGB)
 para()
 personalizar()
-turbos = 10
+turbos = 5
